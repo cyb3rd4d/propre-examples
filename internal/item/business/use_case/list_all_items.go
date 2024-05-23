@@ -8,10 +8,7 @@ import (
 )
 
 type ListAllItemsOutput struct {
-	Items []struct {
-		ID   int
-		Name string
-	}
+	Items []Item
 }
 
 type ListAllItemsInteractor[Input any, Output mo.Result[ListAllItemsOutput]] struct {

@@ -5,34 +5,27 @@ import (
 	"net/http"
 
 	"github.com/cyb3rd4d/poc-propre/internal/item/adapter/presenter/response"
+	"github.com/cyb3rd4d/poc-propre/internal/item/adapter/presenter/view"
 	usecase "github.com/cyb3rd4d/poc-propre/internal/item/business/use_case"
 	"github.com/samber/mo"
 )
 
-type addItemPayload struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-}
+type AddItemPresenter[Output mo.Result[usecase.Item]] struct{}
 
-func newAddItemPayloadFromOutput(output usecase.AddItemOutput) addItemPayload {
-	return addItemPayload{
-		ID:   output.ID,
-		Name: output.Name,
-	}
-}
-
-type AddItemPresenter[Output mo.Result[usecase.AddItemOutput]] struct{}
-
-func NewAddItemPresenter[Output mo.Result[usecase.AddItemOutput]]() *AddItemPresenter[Output] {
+func NewAddItemPresenter[Output mo.Result[usecase.Item]]() *AddItemPresenter[Output] {
 	return &AddItemPresenter[Output]{}
 }
 
-func (sender *AddItemPresenter[Output]) Send(ctx context.Context, rw http.ResponseWriter, output mo.Result[usecase.AddItemOutput]) {
+func (sender *AddItemPresenter[Output]) Send(
+	ctx context.Context,
+	rw http.ResponseWriter,
+	output mo.Result[usecase.Item],
+) {
 	item, err := output.Get()
 	if err != nil {
 		response.Error(err).Send(ctx, rw)
 		return
 	}
 
-	response.Created(newAddItemPayloadFromOutput(item)).Send(ctx, rw)
+	response.Created(view.NewItemFromOutput(item)).Send(ctx, rw)
 }
