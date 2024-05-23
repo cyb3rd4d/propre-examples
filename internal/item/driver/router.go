@@ -8,6 +8,7 @@ import (
 	"github.com/cyb3rd4d/poc-propre/internal/item/adapter/gateway"
 	"github.com/cyb3rd4d/poc-propre/internal/item/adapter/presenter"
 	usecase "github.com/cyb3rd4d/poc-propre/internal/item/business/use_case"
+	"github.com/cyb3rd4d/poc-propre/internal/item/driver/logger"
 	"github.com/cyb3rd4d/propre"
 	"github.com/spf13/viper"
 )
@@ -43,9 +44,37 @@ func NewRouter(ctx context.Context) *http.ServeMux {
 		presenter.NewListAllItemsPresenter(),
 	)
 
-	srv.Handle("GET /item", listAllItemsHTTPHandler)
-	srv.Handle("GET /item/{id}", getItemHTTPHandler)
-	srv.Handle("POST /item", addItemHTTPHandler)
+	srv.Handle("GET /item", applyMiddlewares(ctx, listAllItemsHTTPHandler))
+	srv.Handle("GET /item/{id}", applyMiddlewares(ctx, getItemHTTPHandler))
+	srv.Handle("POST /item", applyMiddlewares(ctx, addItemHTTPHandler))
 
 	return srv
+}
+
+type middleware func(http.Handler) http.Handler
+
+func applyMiddlewares(ctx context.Context, next http.Handler) http.Handler {
+	next = requestLogMiddleware()(next)
+	next = requestContextMiddleware(ctx)(next)
+
+	return next
+}
+
+func requestContextMiddleware(ctx context.Context) middleware {
+	return func(next http.Handler) http.Handler {
+		fn := func(rw http.ResponseWriter, req *http.Request) {
+			next.ServeHTTP(rw, req.WithContext(ctx))
+		}
+
+		return http.HandlerFunc(fn)
+	}
+}
+
+func requestLogMiddleware() middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+			logger.FromContext(req.Context()).Debug("[http] incoming request", "uri", req.RequestURI)
+			next.ServeHTTP(rw, req)
+		})
+	}
 }
