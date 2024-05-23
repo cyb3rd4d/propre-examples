@@ -30,9 +30,9 @@ func NewAddItemPresenter[Output mo.Result[usecase.AddItemOutput]]() *AddItemPres
 func (sender *AddItemPresenter[Output]) Send(ctx context.Context, rw http.ResponseWriter, output mo.Result[usecase.AddItemOutput]) {
 	item, err := output.Get()
 	if err != nil {
-		response.Error(err).Send(rw)
+		response.Error(err).Send(ctx, rw)
 		return
 	}
 
-	response.Created(newAddItemPayloadFromOutput(item)).Send(rw)
+	response.Created(newAddItemPayloadFromOutput(item)).Send(ctx, rw)
 }

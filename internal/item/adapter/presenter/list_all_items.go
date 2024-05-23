@@ -40,7 +40,7 @@ func NewListAllItemsPresenter[Output mo.Result[usecase.ListAllItemsOutput]]() *L
 func (sender *ListAllItemsPresenter[Output]) Send(ctx context.Context, rw http.ResponseWriter, output mo.Result[usecase.ListAllItemsOutput]) {
 	items, err := output.Get()
 	if err != nil {
-		response.Error(err).Send(rw)
+		response.Error(err).Send(ctx, rw)
 	}
 
 	response.OK(newListAllItemsPayloadFromOutput(items))

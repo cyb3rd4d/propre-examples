@@ -1,6 +1,7 @@
 package response
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -9,12 +10,12 @@ import (
 )
 
 type errorPayload struct {
-	Message string `json:"message"`
+	Message string `json:"message,omitempty"`
 }
 
 type payload[Data any] struct {
-	Data  Data         `json:"data,omitempty"`
-	Error errorPayload `json:"error,omitempty"`
+	Data  Data          `json:"data,omitempty"`
+	Error *errorPayload `json:"error,omitempty"`
 }
 
 type Response[Data any] struct {
@@ -39,7 +40,7 @@ func Created[Data any](data Data) *Response[Data] {
 func NotFound() *Response[any] {
 	return &Response[any]{
 		payload: payload[any]{
-			Error: errorPayload{
+			Error: &errorPayload{
 				Message: "item not found",
 			},
 		},
@@ -51,12 +52,12 @@ func Error(err error) *Response[any] {
 	p, statusCode := mapError(err)
 
 	return &Response[any]{
-		payload:    payload[any]{Error: p},
+		payload:    payload[any]{Error: &p},
 		statusCode: statusCode,
 	}
 }
 
-func (r *Response[Data]) Send(rw http.ResponseWriter) {
+func (r *Response[Data]) Send(ctx context.Context, rw http.ResponseWriter) {
 	rw.Header().Set("content-type", "application/json")
 	rw.WriteHeader(r.statusCode)
 	json.NewEncoder(rw).Encode(r.payload)

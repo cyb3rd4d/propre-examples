@@ -30,15 +30,15 @@ func NewGetItemPresenter[Output mo.Result[mo.Option[usecase.GetItemOutput]]]() *
 func (sender *GetItemPresenter[Output]) Send(ctx context.Context, rw http.ResponseWriter, output mo.Result[mo.Option[usecase.GetItemOutput]]) {
 	maybe, err := output.Get()
 	if err != nil {
-		response.Error(err).Send(rw)
+		response.Error(err).Send(ctx, rw)
 		return
 	}
 
 	item, ok := maybe.Get()
 	if !ok {
-		response.NotFound().Send(rw)
+		response.NotFound().Send(ctx, rw)
 		return
 	}
 
-	response.OK(newGetItemPayloadFromOutput(item)).Send(rw)
+	response.OK(newGetItemPayloadFromOutput(item)).Send(ctx, rw)
 }
