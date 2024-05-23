@@ -21,7 +21,17 @@ func NewHTTPServer(addr string, router http.Handler) *HTTPServer {
 	return &HTTPServer{addr: addr, srv: &srv}
 }
 
-func (s *HTTPServer) Run(ctx context.Context) error {
-	logger.FromContext(ctx).Info("[server] start listening", "addr", s.addr)
-	return s.srv.ListenAndServe()
+func (s *HTTPServer) Run(ctx context.Context) {
+	go func() {
+		logger.FromContext(ctx).Info("[server] start listening", "addr", s.addr)
+		s.srv.ListenAndServe()
+	}()
+
+	<-ctx.Done()
+	logger.FromContext(ctx).Info("[server] shutdown signal received")
+	if ctx.Err() != nil {
+		logger.FromContext(ctx).Error("[server] shutdown signal caused by an error", "previous", ctx.Err())
+	}
+
+	s.srv.Shutdown(ctx)
 }
