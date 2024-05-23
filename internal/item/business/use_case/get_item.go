@@ -29,6 +29,7 @@ func (interactor *GetItemInteractor[Input, Output]) Handle(
 ) mo.Result[mo.Option[Item]] {
 	inputData, err := input.Get()
 	if err != nil {
+		logInputValidationError(ctx, err)
 		return mo.Err[mo.Option[Item]](err)
 	}
 

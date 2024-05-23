@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/cyb3rd4d/poc-propre/internal/item/business/entity"
-	"github.com/cyb3rd4d/poc-propre/internal/item/business/repository"
+	usecase "github.com/cyb3rd4d/poc-propre/internal/item/business/use_case"
 	"github.com/samber/mo"
 )
 
@@ -36,7 +36,7 @@ func (repo *MysqlItemRepository) FindByID(ctx context.Context, id int) mo.Result
 		if errors.Is(err, sql.ErrNoRows) {
 			return mo.Ok(mo.None[entity.Item]())
 		} else {
-			return mo.Errf[mo.Option[entity.Item]]("%w in find by ID caused by: %s", repository.ErrItemUnknown, err)
+			return mo.Errf[mo.Option[entity.Item]]("%w in find by ID caused by: %s", usecase.ErrInternal, err)
 		}
 	}
 
@@ -49,7 +49,7 @@ func (repo *MysqlItemRepository) FindAll(ctx context.Context) mo.Result[[]entity
 
 	rows, err := repo.db.QueryContext(ctx, "SELECT id, name FROM item")
 	if err != nil {
-		return mo.Errf[[]entity.Item]("%w, find all query error, caused by: %s", repository.ErrItemUnknown, err)
+		return mo.Errf[[]entity.Item]("%w, find all query error, caused by: %s", usecase.ErrInternal, err)
 	}
 
 	defer rows.Close()
@@ -57,7 +57,7 @@ func (repo *MysqlItemRepository) FindAll(ctx context.Context) mo.Result[[]entity
 	for rows.Next() {
 		var item itemRow
 		if err = rows.Scan(&item.ID, &item.Name); err != nil {
-			return mo.Errf[[]entity.Item]("%w, find all scan error, caused by: %s", repository.ErrItemUnknown, err)
+			return mo.Errf[[]entity.Item]("%w, find all scan error, caused by: %s", usecase.ErrInternal, err)
 		}
 
 		entities = append(entities, newEntityFromRow(item))
@@ -77,7 +77,7 @@ func (repo *MysqlItemRepository) Persist(ctx context.Context, item entity.Item) 
 		}
 	}
 
-	return mo.Errf[entity.Item]("%w caused by: no known event in the entity", repository.ErrItemUnknown)
+	return mo.Errf[entity.Item]("%w caused by: no known event in the entity", usecase.ErrInternal)
 }
 
 func (repo *MysqlItemRepository) Delete(ctx context.Context, item entity.Item) mo.Result[bool] {
@@ -86,12 +86,12 @@ func (repo *MysqlItemRepository) Delete(ctx context.Context, item entity.Item) m
 
 	result, err := repo.db.ExecContext(ctx, "DELETE FROM item WHERE id = ?", item.ID())
 	if err != nil {
-		return mo.Errf[bool]("%w in delete, caused by %s", repository.ErrItemUnknown, err)
+		return mo.Errf[bool]("%w in delete, caused by %s", usecase.ErrInternal, err)
 	}
 
 	affectedRows, err := result.RowsAffected()
 	if err != nil || affectedRows == 0 {
-		return mo.Errf[bool]("%w, no rows updated, caused by: %s", repository.ErrItemUnknown, err)
+		return mo.Errf[bool]("%w, no rows updated, caused by: %s", usecase.ErrInternal, err)
 	}
 
 	return mo.Ok(true)
@@ -103,12 +103,12 @@ func (repo *MysqlItemRepository) insert(ctx context.Context, item entity.Item) m
 
 	result, err := repo.db.ExecContext(ctx, "INSERT INTO item SET name = ?", item.Name())
 	if err != nil {
-		return mo.Errf[entity.Item]("%w in insert, caused by: %s", repository.ErrItemUnknown, err)
+		return mo.Errf[entity.Item]("%w in insert, caused by: %s", usecase.ErrInternal, err)
 	}
 
 	itemID, err := result.LastInsertId()
 	if err != nil {
-		return mo.Errf[entity.Item]("%w, unable to know the created ID, caused by: %s", repository.ErrItemUnknown, err)
+		return mo.Errf[entity.Item]("%w, unable to know the created ID, caused by: %s", usecase.ErrInternal, err)
 	}
 
 	return mo.Ok(entity.NewItem(
@@ -123,12 +123,12 @@ func (repo *MysqlItemRepository) update(ctx context.Context, item entity.Item) m
 
 	result, err := repo.db.ExecContext(ctx, "UPDATE item SET name = ? WHERE id = ?", item.Name(), item.ID())
 	if err != nil {
-		return mo.Errf[entity.Item]("%w in update, caused by: %s", repository.ErrItemUnknown, err)
+		return mo.Errf[entity.Item]("%w in update, caused by: %s", usecase.ErrInternal, err)
 	}
 
 	affectedRows, err := result.RowsAffected()
 	if err != nil || affectedRows == 0 {
-		return mo.Errf[entity.Item]("%w, no rows updated, caused by: %s", repository.ErrItemUnknown, err)
+		return mo.Errf[entity.Item]("%w, no rows updated, caused by: %s", usecase.ErrInternal, err)
 	}
 
 	return mo.Ok(item)

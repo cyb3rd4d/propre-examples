@@ -25,7 +25,8 @@ func (decoder *GetItemRequestDecoder[Input]) Decode(req *http.Request) mo.Result
 	itemID, err := strconv.Atoi(itemIDParam)
 	if err != nil {
 		return mo.Err[usecase.GetItemInput](usecase.ErrInputValidation{
-			Reason: "invalid item ID",
+			Reason:   "invalid item ID",
+			Previous: err,
 		})
 	}
 

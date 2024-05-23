@@ -23,6 +23,15 @@ type Response[Data any] struct {
 	statusCode int
 }
 
+func newErrorResponse(message string, statusCode int) *Response[any] {
+	return &Response[any]{
+		payload: payload[any]{
+			Error: &errorPayload{Message: message},
+		},
+		statusCode: statusCode,
+	}
+}
+
 func OK[Data any](data Data) *Response[Data] {
 	return &Response[Data]{
 		payload:    payload[Data]{Data: data},
@@ -49,29 +58,16 @@ func NotFound() *Response[any] {
 }
 
 func Error(err error) *Response[any] {
-	p, statusCode := mapError(err)
-
-	return &Response[any]{
-		payload:    payload[any]{Error: &p},
-		statusCode: statusCode,
+	var errInputValidation usecase.ErrInputValidation
+	if errors.As(err, &errInputValidation) {
+		return newErrorResponse(errInputValidation.Reason, http.StatusBadRequest)
 	}
+
+	return newErrorResponse(err.Error(), http.StatusInternalServerError)
 }
 
 func (r *Response[Data]) Send(ctx context.Context, rw http.ResponseWriter) {
 	rw.Header().Set("content-type", "application/json")
 	rw.WriteHeader(r.statusCode)
 	json.NewEncoder(rw).Encode(r.payload)
-}
-
-func mapError(err error) (errorPayload, int) {
-	var p errorPayload
-	var errInputValidation *usecase.ErrInputValidation
-
-	if errors.As(err, &errInputValidation) {
-		p.Message = errInputValidation.Reason
-		return p, http.StatusBadRequest
-	}
-
-	p.Message = err.Error()
-	return p, http.StatusInternalServerError
 }

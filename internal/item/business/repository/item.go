@@ -2,15 +2,9 @@ package repository
 
 import (
 	"context"
-	"errors"
 
 	"github.com/cyb3rd4d/poc-propre/internal/item/business/entity"
 	"github.com/samber/mo"
-)
-
-var (
-	ErrItemNotFound = errors.New("item not found")
-	ErrItemUnknown  = errors.New("unknown item error")
 )
 
 type ItemRepository interface {

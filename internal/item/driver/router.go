@@ -73,7 +73,12 @@ func requestContextMiddleware(ctx context.Context) middleware {
 func requestLogMiddleware() middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-			logger.FromContext(req.Context()).Debug("[http] incoming request", "uri", req.RequestURI)
+			logger.FromContext(req.Context()).Debug(
+				"[http] incoming request",
+				"method", req.Method,
+				"uri", req.RequestURI,
+			)
+
 			next.ServeHTTP(rw, req)
 		})
 	}
