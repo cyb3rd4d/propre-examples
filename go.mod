@@ -5,6 +5,7 @@ go 1.22.0
 require (
 	github.com/cyb3rd4d/propre v0.1.0-alpha
 	github.com/go-sql-driver/mysql v1.8.1
+	github.com/joho/godotenv v1.5.1
 	github.com/samber/mo v1.11.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2

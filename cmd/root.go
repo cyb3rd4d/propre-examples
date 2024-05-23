@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var (
-	logLevel   string
 	configFile string
 )
 
@@ -29,23 +29,19 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.Flags().StringVar(&logLevel, "log-level", "info", "The level of the logger")
-	rootCmd.Flags().StringVar(&configFile, "config-file", "", "The path of the configuration file")
-
-	viper.BindPFlag("log_level", rootCmd.Flags().Lookup("log-level"))
+	rootCmd.PersistentFlags().StringVar(&configFile, "config-file", ".env", "The path of the configuration file")
 }
 
 func initConfig() {
+	viper.SetEnvPrefix("propre")
+	viper.AutomaticEnv()
+
 	if configFile == "" {
 		return
 	}
 
-	viper.SetConfigFile(configFile)
-	viper.SetEnvPrefix("propre")
-	viper.AutomaticEnv()
-
-	if err := viper.ReadInConfig(); err != nil {
-		fmt.Fprintf(os.Stderr, "could not load the configuration file: %s", err)
+	if err := godotenv.Load(configFile); err != nil {
+		fmt.Fprintf(os.Stderr, "could not load the configuration file: %s\n", err)
 		os.Exit(1)
 	}
 }

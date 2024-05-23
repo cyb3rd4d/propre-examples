@@ -22,9 +22,8 @@ var startServerCmd = &cobra.Command{
 		ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 		defer cancel()
 
-		ctx = logger.ToContext(ctx, logger.New(logLevel))
-
-		srv := driver.NewHTTPServer(serverAddr, driver.NewRouter())
+		ctx = logger.ToContext(ctx, logger.New(viper.GetString("log_level")))
+		srv := driver.NewHTTPServer(serverAddr, driver.NewRouter(ctx))
 		srv.Run(ctx)
 	},
 }

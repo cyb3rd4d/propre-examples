@@ -1,6 +1,7 @@
 package driver
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/cyb3rd4d/poc-propre/internal/item/adapter/decoder"
@@ -11,13 +12,14 @@ import (
 	"github.com/spf13/viper"
 )
 
-func NewRouter() *http.ServeMux {
+func NewRouter(ctx context.Context) *http.ServeMux {
 	srv := http.NewServeMux()
 
-	db := NewMysqlConnection(MysqlOpts{
+	db := NewMysqlConnection(ctx, MysqlOpts{
 		User:     viper.GetString("db_user"),
 		Password: viper.GetString("db_password"),
 		Host:     viper.GetString("db_host"),
+		Port:     viper.GetInt("db_port"),
 		DBName:   viper.GetString("db_name"),
 	})
 

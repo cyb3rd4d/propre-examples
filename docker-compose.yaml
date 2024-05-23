@@ -1,0 +1,11 @@
+services:
+  db:
+    image: mariadb:11.3.2
+    restart: unless-stopped
+    ports:
+      - "${PROPRE_DB_PORT}:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: ${PROPRE_DB_PASSWORD}
+      MARIADB_DATABASE: ${PROPRE_DB_NAME}
+    volumes:
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql:ro
