@@ -43,5 +43,5 @@ func (sender *ListAllItemsPresenter[Output]) Send(ctx context.Context, rw http.R
 		response.Error(err).Send(ctx, rw)
 	}
 
-	response.OK(newListAllItemsPayloadFromOutput(items))
+	response.OK(newListAllItemsPayloadFromOutput(items)).Send(ctx, rw)
 }
