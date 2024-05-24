@@ -1,13 +1,17 @@
 package view
 
-import usecase "github.com/cyb3rd4d/poc-propre/internal/item/business/use_case"
+import (
+	usecase "github.com/cyb3rd4d/poc-propre/internal/item/business/use_case"
+)
 
-type ListItems []Item
+type ListItems struct {
+	Items []Item `json:"items"`
+}
 
 func NewListItemsFromOutput(output usecase.ListAllItemsOutput) ListItems {
 	payload := ListItems{}
 	for _, item := range output.Items {
-		payload = append(payload, NewItemFromOutput(item))
+		payload.Items = append(payload.Items, NewItemFromOutput(item))
 	}
 
 	return payload

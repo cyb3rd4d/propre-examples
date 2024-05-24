@@ -3,19 +3,23 @@ package response
 import (
 	"context"
 	"encoding/json"
+	"encoding/xml"
 	"errors"
+	"io"
 	"net/http"
 
+	"github.com/cyb3rd4d/poc-propre/internal/item/adapter/decoder"
 	usecase "github.com/cyb3rd4d/poc-propre/internal/item/business/use_case"
 )
 
 type errorPayload struct {
-	Message string `json:"message,omitempty"`
+	Message string `json:"message,omitempty" xml:"message,omitempty"`
 }
 
 type payload[Data any] struct {
-	Data  Data          `json:"data,omitempty"`
-	Error *errorPayload `json:"error,omitempty"`
+	XMLName xml.Name      `json:"-" xml:"Payload"`
+	Data    Data          `json:"data,omitempty" xml:",omitempty"`
+	Error   *errorPayload `json:"error,omitempty" xml:",omitempty"`
 }
 
 type Response[Data any] struct {
@@ -23,13 +27,13 @@ type Response[Data any] struct {
 	statusCode int
 }
 
-func newErrorResponse(message string, statusCode int) *Response[any] {
-	return &Response[any]{
-		payload: payload[any]{
-			Error: &errorPayload{Message: message},
-		},
-		statusCode: statusCode,
+func (r *Response[Data]) encode(rw io.Writer, contentType string) {
+	if contentType == "application/xml" {
+		xml.NewEncoder(rw).Encode(r.payload)
+		return
 	}
+
+	json.NewEncoder(rw).Encode(r.payload)
 }
 
 func OK[Data any](data Data) *Response[Data] {
@@ -63,11 +67,25 @@ func Error(err error) *Response[any] {
 		return newErrorResponse(errInputValidation.Reason, http.StatusBadRequest)
 	}
 
+	if errors.Is(err, usecase.ErrItemNotFound) {
+		return NotFound()
+	}
+
 	return newErrorResponse(err.Error(), http.StatusInternalServerError)
 }
 
 func (r *Response[Data]) Send(ctx context.Context, rw http.ResponseWriter) {
-	rw.Header().Set("content-type", "application/json")
+	contentType := decoder.RequestedContentTypeFromContext(ctx)
+	rw.Header().Set("content-type", contentType)
 	rw.WriteHeader(r.statusCode)
-	json.NewEncoder(rw).Encode(r.payload)
+	r.encode(rw, contentType)
+}
+
+func newErrorResponse(message string, statusCode int) *Response[any] {
+	return &Response[any]{
+		payload: payload[any]{
+			Error: &errorPayload{Message: message},
+		},
+		statusCode: statusCode,
+	}
 }
