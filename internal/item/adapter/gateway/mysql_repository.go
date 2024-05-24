@@ -126,8 +126,8 @@ func (repo *MysqlItemRepository) update(ctx context.Context, item entity.Item) m
 		return mo.Errf[entity.Item]("%w in update, caused by: %s", usecase.ErrInternal, err)
 	}
 
-	affectedRows, err := result.RowsAffected()
-	if err != nil || affectedRows == 0 {
+	_, err = result.RowsAffected()
+	if err != nil {
 		return mo.Errf[entity.Item]("%w, no rows updated, caused by: %s", usecase.ErrInternal, err)
 	}
 

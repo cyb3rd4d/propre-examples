@@ -13,3 +13,15 @@ func NewItemFromOutput(output usecase.Item) Item {
 		Name: output.Name,
 	}
 }
+
+type XMLItem struct {
+	ID   int    `xml:"id"`
+	Name string `xml:"name"`
+}
+
+func NewXMLItemFromOutput(output usecase.Item) XMLItem {
+	return XMLItem{
+		ID:   output.ID,
+		Name: output.Name,
+	}
+}

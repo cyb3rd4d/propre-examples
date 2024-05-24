@@ -1,7 +1,6 @@
 package decoder
 
 import (
-	"encoding/json"
 	"net/http"
 
 	usecase "github.com/cyb3rd4d/poc-propre/internal/item/business/use_case"
@@ -12,6 +11,16 @@ type addItemRequest struct {
 	Name string `json:"name"`
 }
 
+func (request addItemRequest) validate() error {
+	if request.Name == "" {
+		return usecase.ErrInputValidation{
+			Reason: "%w: empty item name",
+		}
+	}
+
+	return nil
+}
+
 type AddItemRequestDecoder[Input mo.Result[usecase.AddItemInput]] struct{}
 
 func NewAddItemRequestDecoder[Input mo.Result[usecase.AddItemInput]]() *AddItemRequestDecoder[Input] {
@@ -19,19 +28,9 @@ func NewAddItemRequestDecoder[Input mo.Result[usecase.AddItemInput]]() *AddItemR
 }
 
 func (decoder *AddItemRequestDecoder[Input]) Decode(req *http.Request) mo.Result[usecase.AddItemInput] {
-	var data addItemRequest
-	err := json.NewDecoder(req.Body).Decode(&data)
+	data, err := decodePayload[addItemRequest](req)
 	if err != nil {
-		mo.Err[usecase.AddItemInput](usecase.ErrInputValidation{
-			Reason:   "unable to decode the request",
-			Previous: err,
-		})
-	}
-
-	if data.Name == "" {
-		return mo.Err[usecase.AddItemInput](usecase.ErrInputValidation{
-			Reason: "%w: empty item name",
-		})
+		return mo.Err[usecase.AddItemInput](err)
 	}
 
 	return mo.Ok(usecase.AddItemInput{

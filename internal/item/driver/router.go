@@ -44,8 +44,15 @@ func NewRouter(ctx context.Context) *http.ServeMux {
 		presenter.NewListAllItemsPresenter(),
 	)
 
+	updateItemHTTPHandler := propre.NewHTTPHandler(
+		decoder.NewUpdateItemRequestDecoder(),
+		usecase.NewUpdateItemInteractor(repository),
+		presenter.NewUpdateItemPresenter(),
+	)
+
 	srv.Handle("GET /item", applyMiddlewares(ctx, listAllItemsHTTPHandler))
 	srv.Handle("GET /item/{id}", applyMiddlewares(ctx, getItemHTTPHandler))
+	srv.Handle("PUT /item/{id}", applyMiddlewares(ctx, updateItemHTTPHandler))
 	srv.Handle("POST /item", applyMiddlewares(ctx, addItemHTTPHandler))
 
 	return srv
