@@ -28,11 +28,6 @@ func NewUpdateItemRequestDecoder[Input mo.Result[usecase.UpdateItemInput]]() *Up
 }
 
 func (decoder *UpdateItemRequestDecoder[Input]) Decode(req *http.Request) mo.Result[usecase.UpdateItemInput] {
-	err := storeRequestedContentType(req)
-	if err != nil {
-		return mo.Err[usecase.UpdateItemInput](err)
-	}
-
 	itemID, err := extractItemID(req)
 	if err != nil {
 		return mo.Err[usecase.UpdateItemInput](err)

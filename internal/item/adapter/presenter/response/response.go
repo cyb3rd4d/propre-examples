@@ -8,8 +8,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/cyb3rd4d/poc-propre/internal/item/adapter/decoder"
 	usecase "github.com/cyb3rd4d/poc-propre/internal/item/business/use_case"
+	pocHttp "github.com/cyb3rd4d/poc-propre/internal/item/driver/http"
 )
 
 type errorPayload struct {
@@ -75,7 +75,7 @@ func Error(err error) *Response[any] {
 }
 
 func (r *Response[Data]) Send(ctx context.Context, rw http.ResponseWriter) {
-	contentType := decoder.RequestedContentTypeFromContext(ctx)
+	contentType := pocHttp.RequestedContentType(ctx)
 	rw.Header().Set("content-type", contentType)
 	rw.WriteHeader(r.statusCode)
 	r.encode(rw, contentType)

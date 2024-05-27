@@ -8,6 +8,7 @@ import (
 	"github.com/cyb3rd4d/poc-propre/internal/item/adapter/gateway"
 	"github.com/cyb3rd4d/poc-propre/internal/item/adapter/presenter"
 	usecase "github.com/cyb3rd4d/poc-propre/internal/item/business/use_case"
+	pocHttp "github.com/cyb3rd4d/poc-propre/internal/item/driver/http"
 	"github.com/cyb3rd4d/poc-propre/internal/item/driver/logger"
 	"github.com/cyb3rd4d/propre"
 	"github.com/spf13/viper"
@@ -61,6 +62,7 @@ func NewRouter(ctx context.Context) *http.ServeMux {
 type middleware func(http.Handler) http.Handler
 
 func applyMiddlewares(ctx context.Context, next http.Handler) http.Handler {
+	next = pocHttp.AcceptRequestHeaderMiddleware()(next)
 	next = requestLogMiddleware()(next)
 	next = requestContextMiddleware(ctx)(next)
 

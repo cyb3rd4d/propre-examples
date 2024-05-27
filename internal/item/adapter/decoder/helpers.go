@@ -1,9 +1,7 @@
 package decoder
 
 import (
-	"context"
 	"encoding/json"
-	"mime"
 	"net/http"
 	"strconv"
 
@@ -14,56 +12,6 @@ const (
 	defaultRequestedContentType = "application/json"
 )
 
-var (
-	supportedContentTypes = []string{
-		"application/json",
-		"application/xml",
-	}
-)
-
-type requestedContentTypeKey struct{}
-
-func RequestedContentTypeFromContext(ctx context.Context) string {
-	v := ctx.Value(requestedContentTypeKey{})
-	if v == nil {
-		return defaultRequestedContentType
-	}
-
-	contentType := v.(string)
-	if contentType == "" {
-		contentType = defaultRequestedContentType
-	}
-
-	return contentType
-}
-
-func storeRequestedContentType(req *http.Request) error {
-	requestedContentType, _, err := mime.ParseMediaType(req.Header.Get("accept"))
-	if err != nil {
-		return usecase.ErrInputValidation{
-			Reason: "malformed requested content type",
-		}
-	}
-
-	var isSupported bool
-	for _, contentType := range supportedContentTypes {
-		if contentType == requestedContentType {
-			isSupported = true
-			break
-		}
-	}
-
-	if !isSupported {
-		return usecase.ErrInputValidation{
-			Reason: "unsupported requested content type",
-		}
-	}
-
-	ctx := context.WithValue(req.Context(), requestedContentTypeKey{}, requestedContentType)
-	*req = *req.WithContext(ctx)
-
-	return nil
-}
 
 func extractItemID(req *http.Request) (int, error) {
 	var itemID int
