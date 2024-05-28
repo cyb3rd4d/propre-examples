@@ -5,8 +5,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"shopping-list/internal/item/driver"
-	"shopping-list/internal/item/driver/logger"
+	"shopping-list/internal/article/driver"
+	"shopping-list/internal/article/driver/logger"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
