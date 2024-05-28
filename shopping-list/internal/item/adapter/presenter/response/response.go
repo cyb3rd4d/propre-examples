@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	usecase "shopping-list/internal/item/business/use_case"
-	pocHttp "shopping-list/internal/item/driver/http"
+	driverHttp "shopping-list/internal/item/driver/http"
 )
 
 type errorPayload struct {
@@ -75,7 +75,7 @@ func Error(err error) *Response[any] {
 }
 
 func (r *Response[Data]) Send(ctx context.Context, rw http.ResponseWriter) {
-	contentType := pocHttp.RequestedContentType(ctx)
+	contentType := driverHttp.RequestedContentType(ctx)
 	rw.Header().Set("content-type", contentType)
 	rw.WriteHeader(r.statusCode)
 	r.encode(rw, contentType)
