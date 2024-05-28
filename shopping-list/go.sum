@@ -3,6 +3,8 @@ filippo.io/edwards25519 v1.1.0/go.mod h1:BxyFTGdWcka3PhytdK4V28tE5sGfRvvvRV7EaN4
 github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/cyb3rd4d/propre v0.1.0-alpha h1:SY5I785pvTLfSJj28vis1t3zcp3DxC8YZIUMKp2VnD8=
 github.com/cyb3rd4d/propre v0.1.0-alpha/go.mod h1:wHmLL07eIfDd/Sz4eNahXeQEtQ5CDWCzYVO1WHAY+K8=
+github.com/cyb3rd4d/propre v0.1.1-alpha h1:JoDbYyTil/M++OxKK5Hga5zeemnZdZpw0IZ0x15KhaY=
+github.com/cyb3rd4d/propre v0.1.1-alpha/go.mod h1:wHmLL07eIfDd/Sz4eNahXeQEtQ5CDWCzYVO1WHAY+K8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
