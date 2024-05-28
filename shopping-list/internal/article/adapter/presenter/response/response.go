@@ -13,13 +13,13 @@ import (
 )
 
 type errorPayload struct {
-	Message string `json:"message,omarticlepty" xml:"message,omarticlepty"`
+	Message string `json:"message,omitempty" xml:"message,omitempty"`
 }
 
 type payload[Data any] struct {
 	XMLName xml.Name      `json:"-" xml:"Payload"`
-	Data    Data          `json:"data,omarticlepty" xml:",omarticlepty"`
-	Error   *errorPayload `json:"error,omarticlepty" xml:",omarticlepty"`
+	Data    Data          `json:"data,omitempty" xml:",omitempty"`
+	Error   *errorPayload `json:"error,omitempty" xml:",omitempty"`
 }
 
 type Response[Data any] struct {
