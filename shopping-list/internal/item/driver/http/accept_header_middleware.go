@@ -4,7 +4,7 @@ import (
 	"mime"
 	"net/http"
 
-	"github.com/cyb3rd4d/poc-propre/internal/item/driver/logger"
+	"shopping-list/internal/item/driver/logger"
 )
 
 const defaultContentType = "application/json"

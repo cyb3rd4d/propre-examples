@@ -8,8 +8,8 @@ import (
 	"io"
 	"net/http"
 
-	usecase "github.com/cyb3rd4d/poc-propre/internal/item/business/use_case"
-	pocHttp "github.com/cyb3rd4d/poc-propre/internal/item/driver/http"
+	usecase "shopping-list/internal/item/business/use_case"
+	pocHttp "shopping-list/internal/item/driver/http"
 )
 
 type errorPayload struct {

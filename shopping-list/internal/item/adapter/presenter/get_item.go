@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/cyb3rd4d/poc-propre/internal/item/adapter/presenter/response"
-	"github.com/cyb3rd4d/poc-propre/internal/item/adapter/presenter/view"
-	usecase "github.com/cyb3rd4d/poc-propre/internal/item/business/use_case"
+	"shopping-list/internal/item/adapter/presenter/response"
+	"shopping-list/internal/item/adapter/presenter/view"
+	usecase "shopping-list/internal/item/business/use_case"
 	"github.com/samber/mo"
 )
 

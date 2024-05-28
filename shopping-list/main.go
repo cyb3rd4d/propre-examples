@@ -1,6 +1,6 @@
 package main
 
-import "github.com/cyb3rd4d/poc-propre/cmd"
+import "shopping-list/cmd"
 
 func main() {
 	cmd.Execute()

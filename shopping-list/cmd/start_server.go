@@ -5,8 +5,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/cyb3rd4d/poc-propre/internal/item/driver"
-	"github.com/cyb3rd4d/poc-propre/internal/item/driver/logger"
+	"shopping-list/internal/item/driver"
+	"shopping-list/internal/item/driver/logger"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

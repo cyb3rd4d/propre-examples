@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/cyb3rd4d/poc-propre/internal/item/driver/logger"
+	"shopping-list/internal/item/driver/logger"
 )
 
 type HTTPServer struct {

@@ -1,4 +1,4 @@
-module github.com/cyb3rd4d/poc-propre
+module shopping-list
 
 go 1.22.0
 

@@ -4,12 +4,13 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/cyb3rd4d/poc-propre/internal/item/adapter/decoder"
-	"github.com/cyb3rd4d/poc-propre/internal/item/adapter/gateway"
-	"github.com/cyb3rd4d/poc-propre/internal/item/adapter/presenter"
-	usecase "github.com/cyb3rd4d/poc-propre/internal/item/business/use_case"
-	pocHttp "github.com/cyb3rd4d/poc-propre/internal/item/driver/http"
-	"github.com/cyb3rd4d/poc-propre/internal/item/driver/logger"
+	"shopping-list/internal/item/adapter/decoder"
+	"shopping-list/internal/item/adapter/gateway"
+	"shopping-list/internal/item/adapter/presenter"
+	usecase "shopping-list/internal/item/business/use_case"
+	pocHttp "shopping-list/internal/item/driver/http"
+	"shopping-list/internal/item/driver/logger"
+
 	"github.com/cyb3rd4d/propre"
 	"github.com/spf13/viper"
 )

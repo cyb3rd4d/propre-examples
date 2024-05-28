@@ -6,8 +6,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/cyb3rd4d/poc-propre/internal/item/business/entity"
-	usecase "github.com/cyb3rd4d/poc-propre/internal/item/business/use_case"
+	"shopping-list/internal/item/business/entity"
+	usecase "shopping-list/internal/item/business/use_case"
 	"github.com/samber/mo"
 )
 

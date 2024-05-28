@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/cyb3rd4d/poc-propre/internal/item/business/repository"
+	"shopping-list/internal/item/business/repository"
 	"github.com/samber/mo"
 )
 

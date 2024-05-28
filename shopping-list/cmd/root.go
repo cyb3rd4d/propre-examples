@@ -15,7 +15,7 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use: "poc-propre",
+	Use: "shopping-list",
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

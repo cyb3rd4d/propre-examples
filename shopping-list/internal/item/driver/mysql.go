@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cyb3rd4d/poc-propre/internal/item/driver/logger"
+	"shopping-list/internal/item/driver/logger"
 	_ "github.com/go-sql-driver/mysql"
 )
 
