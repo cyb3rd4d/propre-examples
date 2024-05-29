@@ -1,7 +1,7 @@
 package decoder
 
 import (
-	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -32,19 +32,14 @@ func extractArticleID(req *http.Request) (int, error) {
 	return articleID, nil
 }
 
-type validatable interface {
-	validate() error
-}
-
-func decodePayload[T validatable](req *http.Request) (T, error) {
-	var data T
-	err := json.NewDecoder(req.Body).Decode(&data)
-	if err != nil {
-		return data, usecase.ErrInputValidation{
-			Reason:   "unable to decode the request",
-			Previous: err,
-		}
+func newPayloadDecodingError(err error) usecase.ErrInputValidation {
+	var errInputValidation usecase.ErrInputValidation
+	if errors.As(err, &errInputValidation) {
+		return errInputValidation
 	}
 
-	return data, data.validate()
+	return usecase.ErrInputValidation{
+		Reason:   "request payload decoding error",
+		Previous: err,
+	}
 }

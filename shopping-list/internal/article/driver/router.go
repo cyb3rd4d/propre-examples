@@ -29,7 +29,9 @@ func NewRouter(ctx context.Context) *http.ServeMux {
 	repository := gateway.NewMysqlArticleRepository(db)
 
 	addArticleHTTPHandler := propre.NewHTTPHandler(
-		decoder.NewAddArticleRequestDecoder(),
+		decoder.NewAddArticleRequestDecoder(
+			propre.NewRequestPayloadExtractor[decoder.AddArticleRequest](propre.JSONDecoder),
+		),
 		usecase.NewAddArticleInteractor(repository),
 		presenter.NewAddArticlePresenter(),
 	)
@@ -47,7 +49,9 @@ func NewRouter(ctx context.Context) *http.ServeMux {
 	)
 
 	updateArticleHTTPHandler := propre.NewHTTPHandler(
-		decoder.NewUpdateArticleRequestDecoder(),
+		decoder.NewUpdateArticleRequestDecoder(
+			propre.NewRequestPayloadExtractor[decoder.UpdateArticleRequest](propre.JSONDecoder),
+		),
 		usecase.NewUpdateArticleInteractor(repository),
 		presenter.NewUpdateArticlePresenter(),
 	)
