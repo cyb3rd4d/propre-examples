@@ -1,6 +1,6 @@
 package usecase
 
-type Article struct {
+type ArticleOuput struct {
 	ID   int
 	Name string
 }

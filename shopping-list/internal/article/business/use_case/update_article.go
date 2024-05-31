@@ -13,11 +13,11 @@ type UpdateArticleInput struct {
 	Name string
 }
 
-type UpdateArticleInteractor[Input mo.Result[UpdateArticleInput], Output mo.Result[Article]] struct {
+type UpdateArticleInteractor[Input mo.Result[UpdateArticleInput], Output mo.Result[ArticleOuput]] struct {
 	repo repository.ArticleRepository
 }
 
-func NewUpdateArticleInteractor[Input mo.Result[UpdateArticleInput], Output mo.Result[Article]](
+func NewUpdateArticleInteractor[Input mo.Result[UpdateArticleInput], Output mo.Result[ArticleOuput]](
 	repo repository.ArticleRepository,
 ) *UpdateArticleInteractor[Input, Output] {
 	return &UpdateArticleInteractor[Input, Output]{
@@ -25,30 +25,30 @@ func NewUpdateArticleInteractor[Input mo.Result[UpdateArticleInput], Output mo.R
 	}
 }
 
-func (interactor *UpdateArticleInteractor[Input, Output]) Handle(ctx context.Context, input mo.Result[UpdateArticleInput]) mo.Result[Article] {
+func (interactor *UpdateArticleInteractor[Input, Output]) Handle(ctx context.Context, input mo.Result[UpdateArticleInput]) mo.Result[ArticleOuput] {
 	article, err := input.Get()
 	if err != nil {
 		logInputValidationError(ctx, err)
-		return mo.Err[Article](err)
+		return mo.Err[ArticleOuput](err)
 	}
 
 	maybe, err := interactor.repo.FindByID(ctx, article.ID).Get()
 	if err != nil {
-		return mo.Err[Article](err)
+		return mo.Err[ArticleOuput](err)
 	}
 
 	foundEntity, ok := maybe.Get()
 	if !ok {
-		return mo.Errf[Article]("%w", ErrArticleNotFound)
+		return mo.Errf[ArticleOuput]("%w", ErrArticleNotFound)
 	}
 
 	foundEntity.SetName(article.Name)
 	updatedEntity, err := interactor.repo.Persist(ctx, foundEntity).Get()
 	if err != nil {
-		return mo.Err[Article](err)
+		return mo.Err[ArticleOuput](err)
 	}
 
-	return mo.Ok(Article{
+	return mo.Ok(ArticleOuput{
 		ID:   updatedEntity.ID(),
 		Name: updatedEntity.Name(),
 	})

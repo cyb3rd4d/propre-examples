@@ -4,35 +4,30 @@ import (
 	"context"
 	"net/http"
 
-	"shopping-list/internal/article/adapter/presenter/response"
 	"shopping-list/internal/article/adapter/presenter/view"
 	usecase "shopping-list/internal/article/business/use_case"
 
+	"github.com/cyb3rd4d/propre"
 	"github.com/samber/mo"
 )
 
-type GetArticlePresenter[Output mo.Result[mo.Option[usecase.Article]]] struct{}
-
-func NewGetArticlePresenter[Output mo.Result[mo.Option[usecase.Article]]]() *GetArticlePresenter[Output] {
-	return &GetArticlePresenter[Output]{}
+type GetArticlePresenter[Output mo.Result[mo.Option[usecase.ArticleOuput]]] struct {
+	response *propre.HTTPResponse[view.Payload]
 }
 
-func (sender *GetArticlePresenter[Output]) Send(
+func NewGetArticlePresenter[Output mo.Result[mo.Option[usecase.ArticleOuput]]](
+	response *propre.HTTPResponse[view.Payload],
+) *GetArticlePresenter[Output] {
+	return &GetArticlePresenter[Output]{
+		response: response,
+	}
+}
+
+func (presenter *GetArticlePresenter[Output]) Present(
 	ctx context.Context,
 	rw http.ResponseWriter,
-	output mo.Result[mo.Option[usecase.Article]],
+	output mo.Result[mo.Option[usecase.ArticleOuput]],
 ) {
-	maybe, err := output.Get()
-	if err != nil {
-		response.Error(err).Send(ctx, rw)
-		return
-	}
-
-	article, ok := maybe.Get()
-	if !ok {
-		response.NotFound().Send(ctx, rw)
-		return
-	}
-
-	response.OK(view.NewArticleFromOutput(article)).Send(ctx, rw)
+	viewModel := view.NewGetArticleViewModel(ctx, output)
+	presenter.response.Send(ctx, rw, viewModel)
 }
