@@ -9,7 +9,7 @@ import (
 )
 
 type ListAllArticlesOutput struct {
-	Articles []Article
+	Articles []ArticleOuput
 }
 
 type ListAllArticlesInteractor[Input any, Output mo.Result[ListAllArticlesOutput]] struct {

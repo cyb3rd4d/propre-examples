@@ -3,7 +3,7 @@ module shopping-list
 go 1.22.0
 
 require (
-	github.com/cyb3rd4d/propre v0.1.1-alpha
+	github.com/cyb3rd4d/propre v0.1.3-alpha
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/joho/godotenv v1.5.1
 	github.com/samber/mo v1.11.0

@@ -13,11 +13,11 @@ type AddArticleInput struct {
 	Name string
 }
 
-type AddArticleInteractor[Input mo.Result[AddArticleInput], Output mo.Result[Article]] struct {
+type AddArticleInteractor[Input mo.Result[AddArticleInput], Output mo.Result[ArticleOuput]] struct {
 	repo repository.ArticleRepository
 }
 
-func NewAddArticleInteractor[Input mo.Result[AddArticleInput], Output mo.Result[Article]](
+func NewAddArticleInteractor[Input mo.Result[AddArticleInput], Output mo.Result[ArticleOuput]](
 	repo repository.ArticleRepository,
 ) *AddArticleInteractor[Input, Output] {
 	return &AddArticleInteractor[Input, Output]{
@@ -28,20 +28,20 @@ func NewAddArticleInteractor[Input mo.Result[AddArticleInput], Output mo.Result[
 func (interactor *AddArticleInteractor[Input, Output]) Handle(
 	ctx context.Context,
 	input mo.Result[AddArticleInput],
-) mo.Result[Article] {
+) mo.Result[ArticleOuput] {
 	inputData, err := input.Get()
 	if err != nil {
 		logInputValidationError(ctx, err)
-		return mo.Err[Article](err)
+		return mo.Err[ArticleOuput](err)
 	}
 
 	article := entity.NewArticle(entity.ArticleWithName(inputData.Name))
 	result, err := interactor.repo.Persist(ctx, article).Get()
 	if err != nil {
-		return mo.Err[Article](err)
+		return mo.Err[ArticleOuput](err)
 	}
 
-	return mo.Ok(Article{
+	return mo.Ok(ArticleOuput{
 		ID:   result.ID(),
 		Name: result.Name(),
 	})

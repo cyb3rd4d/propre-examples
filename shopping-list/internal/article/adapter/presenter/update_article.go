@@ -4,29 +4,30 @@ import (
 	"context"
 	"net/http"
 
-	"shopping-list/internal/article/adapter/presenter/response"
 	"shopping-list/internal/article/adapter/presenter/view"
 	usecase "shopping-list/internal/article/business/use_case"
 
+	"github.com/cyb3rd4d/propre"
 	"github.com/samber/mo"
 )
 
-type UpdateArticlePresenter[Output mo.Result[usecase.Article]] struct{}
-
-func NewUpdateArticlePresenter[Output mo.Result[usecase.Article]]() *UpdateArticlePresenter[Output] {
-	return &UpdateArticlePresenter[Output]{}
+type UpdateArticlePresenter[Output mo.Result[usecase.ArticleOuput]] struct {
+	response *propre.HTTPResponse[view.Payload]
 }
 
-func (sender *UpdateArticlePresenter[Output]) Send(
+func NewUpdateArticlePresenter[Output mo.Result[usecase.ArticleOuput]](
+	response *propre.HTTPResponse[view.Payload],
+) *UpdateArticlePresenter[Output] {
+	return &UpdateArticlePresenter[Output]{
+		response: response,
+	}
+}
+
+func (presenter *UpdateArticlePresenter[Output]) Present(
 	ctx context.Context,
 	rw http.ResponseWriter,
-	output mo.Result[usecase.Article],
+	output mo.Result[usecase.ArticleOuput],
 ) {
-	article, err := output.Get()
-	if err != nil {
-		response.Error(err).Send(ctx, rw)
-		return
-	}
-
-	response.OK(view.NewArticleFromOutput(article)).Send(ctx, rw)
+	viewModel := view.NewUpdateArticleViewModel(ctx, output)
+	presenter.response.Send(ctx, rw, viewModel)
 }

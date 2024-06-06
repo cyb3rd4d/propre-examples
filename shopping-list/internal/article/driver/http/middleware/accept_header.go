@@ -1,38 +1,32 @@
-package http
+package middleware
 
 import (
 	"mime"
 	"net/http"
 
+	h "shopping-list/internal/article/driver/http"
 	"shopping-list/internal/article/driver/logger"
 )
 
-const defaultContentType = "application/json"
-
-var (
-	supportedContentTypes = []string{
-		"application/json",
-		"application/xml",
-	}
-)
-
 func AcceptRequestHeaderMiddleware() func(http.Handler) http.Handler {
-	return func(h http.Handler) http.Handler {
+	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 			logger := logger.FromContext(req.Context())
 			requestedContentType, _, err := mime.ParseMediaType(req.Header.Get("accept"))
-			logger.Debug("[accept request header middleware] requested content type parsed")
+			logger.Debug("[accept request header middleware] requested content type parsed", "value", requestedContentType)
 			if err != nil {
 				logger.Debug("[accept request header middleware] content type request error", "previous", err)
-				storeContentType(req, defaultContentType)
-				h.ServeHTTP(rw, req)
+				h.StoreContentType(req, h.DefaultContentType)
+				handler.ServeHTTP(rw, req)
 				return
 			}
 
-			logger.Debug("[accept request header middleware] requested content type", "content_type", requestedContentType)
+			if requestedContentType == "*/*" {
+				requestedContentType = h.DefaultContentType
+			}
 
 			var isSupported bool
-			for _, contentType := range supportedContentTypes {
+			for _, contentType := range h.SupportedContentTypes {
 				if contentType == requestedContentType {
 					isSupported = true
 					break
@@ -41,11 +35,11 @@ func AcceptRequestHeaderMiddleware() func(http.Handler) http.Handler {
 
 			if !isSupported {
 				logger.Debug("[accept request header middleware] unsupported requested content type, falling back to default")
-				requestedContentType = defaultContentType
+				requestedContentType = h.DefaultContentType
 			}
 
-			storeContentType(req, requestedContentType)
-			h.ServeHTTP(rw, req)
+			h.StoreContentType(req, requestedContentType)
+			handler.ServeHTTP(rw, req)
 		})
 	}
 }
