@@ -12,10 +12,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	serverAddr string
-)
-
 // startServerCmd represents the startServer command
 var startServerCmd = &cobra.Command{
 	Use: "start-server",
@@ -24,7 +20,7 @@ var startServerCmd = &cobra.Command{
 		defer cancel()
 
 		ctx = logger.ToContext(ctx, logger.New(viper.GetString("log_level")))
-		srv := driver.NewHTTPServer(serverAddr, driver.NewRouter(ctx))
+		srv := driver.NewHTTPServer(viper.GetString("server_addr"), driver.NewRouter(ctx))
 		srv.Run(ctx)
 	},
 }
@@ -32,6 +28,6 @@ var startServerCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(startServerCmd)
 
-	startServerCmd.Flags().StringVar(&serverAddr, "server-addr", ":8888", "The address of the server")
+	startServerCmd.Flags().String("server-addr", ":8888", "The address of the server")
 	viper.BindPFlag("server_addr", startServerCmd.Flags().Lookup("server-addr"))
 }
