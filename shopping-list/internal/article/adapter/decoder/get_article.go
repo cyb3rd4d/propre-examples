@@ -20,5 +20,5 @@ func (decoder *GetArticleRequestDecoder[Input]) Decode(req *http.Request) mo.Res
 		return mo.Err[usecase.GetArticleInput](err)
 	}
 
-	return mo.Ok(usecase.GetArticleInput{ID: articleID})
+	return mo.Ok(usecase.GetArticleInput(articleID))
 }

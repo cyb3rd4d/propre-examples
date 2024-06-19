@@ -8,9 +8,7 @@ import (
 	"github.com/samber/mo"
 )
 
-type GetArticleInput struct {
-	ID int
-}
+type GetArticleInput int
 
 type GetArticleInteractor[Input mo.Result[GetArticleInput], Output mo.Result[mo.Option[ArticleOuput]]] struct {
 	repo repository.ArticleRepository
@@ -34,7 +32,7 @@ func (interactor *GetArticleInteractor[Input, Output]) Handle(
 		return mo.Err[mo.Option[ArticleOuput]](err)
 	}
 
-	result, err := interactor.repo.FindByID(ctx, inputData.ID).Get()
+	result, err := interactor.repo.FindByID(ctx, int(inputData)).Get()
 	if err != nil {
 		return mo.Err[mo.Option[ArticleOuput]](err)
 	}
