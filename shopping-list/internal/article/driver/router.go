@@ -3,10 +3,11 @@ package driver
 import (
 	"context"
 	"net/http"
-
+	"shopping-list/internal/article/adapter/decoder"
 	"shopping-list/internal/article/adapter/gateway"
+	"shopping-list/internal/article/adapter/presenter"
 	"shopping-list/internal/article/adapter/presenter/view"
-	"shopping-list/internal/article/driver/http/handler"
+	usecase "shopping-list/internal/article/business/use_case"
 	"shopping-list/internal/article/driver/http/middleware"
 
 	"github.com/cyb3rd4d/propre"
@@ -14,7 +15,7 @@ import (
 )
 
 func NewRouter(ctx context.Context) *http.ServeMux {
-	srv := http.NewServeMux()
+	router := http.NewServeMux()
 
 	db := NewMysqlConnection(ctx, MysqlOpts{
 		User:     viper.GetString("db_user"),
@@ -27,17 +28,47 @@ func NewRouter(ctx context.Context) *http.ServeMux {
 	repository := gateway.NewMysqlArticleRepository(db)
 	httpResponse := propre.NewHTTPResponse[view.Payload]()
 
-	addArticleHTTPHandler := handler.NewAddArticleHandler(repository, httpResponse)
-	getArticleHTTPHandler := handler.NewGetArticleHandler(repository, httpResponse)
-	listAllArticlesHTTPHandler := handler.NewListAllArticlesHandler(repository, httpResponse)
-	updateArticleHTTPHandler := handler.NewUpdateArticleHandler(repository, httpResponse)
+	addArticle := propre.NewHTTPHandler(
+		decoder.NewAddArticleRequestDecoder(
+			propre.NewRequestPayloadExtractor[decoder.AddArticleRequest](propre.JSONDecoder),
+		),
+		usecase.NewAddArticleInteractor(repository),
+		presenter.NewAddArticlePresenter(httpResponse),
+	)
 
-	srv.Handle("POST /article", applyMiddlewares(ctx, addArticleHTTPHandler))
-	srv.Handle("GET /article/{id}", applyMiddlewares(ctx, getArticleHTTPHandler))
-	srv.Handle("GET /article", applyMiddlewares(ctx, listAllArticlesHTTPHandler))
-	srv.Handle("PUT /article/{id}", applyMiddlewares(ctx, updateArticleHTTPHandler))
+	getArticle := propre.NewHTTPHandler(
+		decoder.NewGetArticleRequestDecoder(),
+		usecase.NewGetArticleInteractor(repository),
+		presenter.NewGetArticlePresenter(httpResponse),
+	)
 
-	return srv
+	listAllArticles := propre.NewHTTPHandler(
+		decoder.NewListAllArticlesRequestDecoder[any](),
+		usecase.NewListAllArticlesInteractor[any](repository),
+		presenter.NewListAllArticlesPresenter(httpResponse),
+	)
+
+	updateArticle := propre.NewHTTPHandler(
+		decoder.NewUpdateArticleRequestDecoder(
+			propre.NewRequestPayloadExtractor[decoder.UpdateArticleRequest](propre.JSONDecoder),
+		),
+		usecase.NewUpdateArticleInteractor(repository),
+		presenter.NewUpdateArticlePresenter(httpResponse),
+	)
+
+	deleteArticle := propre.NewHTTPHandler(
+		decoder.NewDeleteArticleRequestDecoder(),
+		usecase.NewDeleteArticleInteractor(repository),
+		presenter.NewDeleteArticlePresenter(httpResponse),
+	)
+
+	router.Handle("POST /article", applyMiddlewares(ctx, addArticle))
+	router.Handle("GET /article/{id}", applyMiddlewares(ctx, getArticle))
+	router.Handle("GET /article", applyMiddlewares(ctx, listAllArticles))
+	router.Handle("PUT /article/{id}", applyMiddlewares(ctx, updateArticle))
+	router.Handle("DELETE /article/{id}", applyMiddlewares(ctx, deleteArticle))
+
+	return router
 }
 
 func applyMiddlewares(ctx context.Context, next http.Handler) http.Handler {
