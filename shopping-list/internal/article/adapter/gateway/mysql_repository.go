@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"shopping-list/internal/article/business/entity"
 	"time"
 
-	"shopping-list/internal/article/business/entity"
 	usecase "shopping-list/internal/article/business/use_case"
 
 	"github.com/samber/mo"
@@ -41,7 +41,7 @@ func (repo *MysqlArticleRepository) FindByID(ctx context.Context, id int) mo.Res
 		}
 	}
 
-	return mo.Ok(mo.Some(newEntityFromRow(article)))
+	return mo.Ok(mo.Some(article.toEntity()))
 }
 
 func (repo *MysqlArticleRepository) FindAll(ctx context.Context) mo.Result[[]entity.Article] {
@@ -61,7 +61,7 @@ func (repo *MysqlArticleRepository) FindAll(ctx context.Context) mo.Result[[]ent
 			return mo.Errf[[]entity.Article]("%w, find all scan error, caused by: %s", usecase.ErrInternal, err)
 		}
 
-		entities = append(entities, newEntityFromRow(article))
+		entities = append(entities, article.toEntity())
 	}
 
 	return mo.Ok(entities)
@@ -140,7 +140,7 @@ type articleRow struct {
 	Name string
 }
 
-func newEntityFromRow(row articleRow) entity.Article {
+func (row articleRow) toEntity() entity.Article {
 	var opts []entity.ArticleOption
 	if row.ID != 0 {
 		opts = append(opts, entity.ArticleWithID(row.ID))
