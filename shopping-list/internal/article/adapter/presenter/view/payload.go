@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"encoding/xml"
+	"shopping-list/internal/article/driver/http"
 )
 
 type HTTPSendable interface {
@@ -17,7 +18,7 @@ type Payload struct {
 }
 
 func (payload Payload) ContentType(ctx context.Context) string {
-	return requestedContentType(ctx)
+	return http.RequestedContentType(ctx)
 }
 
 func (payload Payload) StatusCode(ctx context.Context) int {
@@ -29,7 +30,7 @@ func (payload Payload) StatusCode(ctx context.Context) int {
 }
 
 func (payload Payload) Encode(ctx context.Context) ([]byte, error) {
-	switch requestedContentType(ctx) {
+	switch http.RequestedContentType(ctx) {
 	case "application/xml":
 		return xml.Marshal(payload)
 	default:
